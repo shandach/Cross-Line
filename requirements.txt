@@ -1,0 +1,9 @@
+ultralytics>=8.0.0
+opencv-python>=4.8.0
+sqlalchemy>=2.0.0
+python-dotenv>=1.0.0
+numpy>=1.24.0
+openvino>=2023.0.0
+openvino-dev>=2023.0.0
+psycopg2-binary>=2.9.0
+pytz>=2023.3

@@ -1,0 +1,18 @@
+# ByteTrack configuration (Sticky)
+# VERY aggressive re-ID for low-light/flicker
+
+tracker_type: bytetrack
+
+# Thresholds: Lower = keeps tracking even weak detections
+track_high_thresh: 0.25      # Start track even with 25% confidence (was 0.5)
+track_low_thresh: 0.05       # Keep track even if barely visible (was 0.1)
+new_track_thresh: 0.4        # Create new track easier (was 0.6)
+
+# Buffer: 90 frames = 3 seconds (was 150/5s) - 3s is plenty for flicker, 5s drifts too much
+track_buffer: 90
+
+# Matching: Lower = easier to match old track (less picky)
+match_thresh: 0.7            # Easy match (was 0.85/0.8)
+
+# Fuse Score: True helps when detection confidence drops
+fuse_score: true
