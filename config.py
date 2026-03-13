@@ -68,14 +68,14 @@ YOLO_MODEL = os.getenv("YOLO_MODEL", "yolov8n.pt")  # Nano model is best for CPU
 DETECTION_CONFIDENCE = float(os.getenv("DETECTION_CONFIDENCE", "0.5"))
 
 # Filter out non-human shapes
-PERSON_MIN_ASPECT_RATIO = 1.2
-PERSON_MAX_WIDTH_RATIO = 0.6
+PERSON_MIN_ASPECT_RATIO = 0.0  # Disabled (0.0) — allows any shape for top-down/side camera angles
+PERSON_MAX_WIDTH_RATIO = 0.9   # Increased to 0.9 for people passing close to camera
 PERSON_CLASS_ID = 0  # COCO class 0 = person
 
 # ═══════════════════════════════════════════════════
 # Tracking Logic (bottom, center, top)
 # ═══════════════════════════════════════════════════
-TRACKING_ANCHOR = os.getenv("TRACKING_ANCHOR", "bottom").lower()
+TRACKING_ANCHOR = os.getenv("TRACKING_ANCHOR", "center").lower()  # 'center' is better for high angles
 
 # ═══════════════════════════════════════════════════
 # Frame Settings

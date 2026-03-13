@@ -175,12 +175,6 @@ class LineCrossingEngine:
                 dx, dy = self._get_movement_vector(tid)
                 
                 if self._matches_direction(dx, dy):
-                    # Check cooldown
-                    if self.last_count_time and (now - self.last_count_time) < self.COOLDOWN_SEC:
-                        # Too fast after last count — might be jitter
-                        print(f"  ⏳ Track {tid} crossed but cooldown active ({self.COOLDOWN_SEC}s)")
-                        continue
-                    
                     # === COUNT! ===
                     self.counted_ids.add(tid)
                     self.total_count += 1
