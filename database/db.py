@@ -102,21 +102,23 @@ class Database:
     
     def get_today_count(self) -> int:
         """Общее количество вошедших за сегодня (по Ташкенту)"""
-        with self.get_session() as session:
-            count = session.query(func.count(EntranceLog.id)).filter(
-                EntranceLog.log_date == today_tashkent(),
-                EntranceLog.camera_name == CAMERA_NAME
-            ).scalar()
-            return count or 0
+        return self.get_count_for_date(today_tashkent())
     
     def get_count_for_date(self, target_date: date) -> int:
         """Количество за конкретную дату"""
         with self.get_session() as session:
-            count = session.query(func.count(EntranceLog.id)).filter(
+            count_log = session.query(func.count(EntranceLog.id)).filter(
                 EntranceLog.log_date == target_date,
                 EntranceLog.camera_name == CAMERA_NAME
-            ).scalar()
-            return count or 0
+            ).scalar() or 0
+            
+            # Fail-safe: if log entries were somehow lost but hourly stats are intact
+            count_hourly = session.query(func.sum(HourlyStats.count)).filter(
+                HourlyStats.log_date == target_date,
+                HourlyStats.camera_name == CAMERA_NAME
+            ).scalar() or 0
+            
+            return max(count_log, int(count_hourly))
     
     def get_hourly_breakdown(self, target_date: date = None) -> List[dict]:
         """Почасовая статистика"""
