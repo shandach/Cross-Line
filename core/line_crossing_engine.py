@@ -104,23 +104,30 @@ class LineCrossingEngine:
         return (float(end[0] - start[0]), float(end[1] - start[1]))
     
     def _matches_direction(self, dx: float, dy: float) -> bool:
-        """Check if movement vector matches the configured IN direction."""
-        min_movement = 3
+        """Check if movement vector generally aligns with the IN direction."""
+        # 1. Calc normal vector of the line (perpendicular)
+        lx = self.line_end[0] - self.line_start[0]
+        ly = self.line_end[1] - self.line_start[1]
         
-        if abs(dx) < min_movement and abs(dy) < min_movement:
-            # Not enough movement — count them anyway (they appeared at the line)
-            return True
+        # Two possible normals
+        nx1, ny1 = -ly, lx
+        nx2, ny2 = ly, -lx
         
+        # 2. Pick the normal that points in our configured direction (up/down/left/right)
         if self.direction == 'down':
-            return dy > 0
+            nx, ny = (nx1, ny1) if ny1 > 0 else (nx2, ny2)
         elif self.direction == 'up':
-            return dy < 0
+            nx, ny = (nx1, ny1) if ny1 < 0 else (nx2, ny2)
         elif self.direction == 'right':
-            return dx > 0
-        elif self.direction == 'left':
-            return dx < 0
+            nx, ny = (nx1, ny1) if nx1 > 0 else (nx2, ny2)
+        else: # left
+            nx, ny = (nx1, ny1) if nx1 < 0 else (nx2, ny2)
             
-        return True
+        # 3. Dot product between person's movement (dx, dy) and the correct normal (nx, ny)
+        dot_product = (dx * nx) + (dy * ny)
+        
+        # If dot product is positive, they are moving in the same general direction as the normal
+        return dot_product > 0
 
     def update(self, detections: list, current_time: float = None) -> List[int]:
         """
