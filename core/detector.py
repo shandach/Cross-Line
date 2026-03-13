@@ -61,15 +61,29 @@ class TrackingDetector:
                     # Try auto-export to OpenVINO (only if openvino is installed)
                     try:
                         import openvino  # noqa: F401
-                        print("⚡ OpenVINO detected! Exporting model for Intel CPU (one-time)...")
-                        self.model.export(format='openvino')
-                        if ov_path.exists():
-                            print("✅ Export success! Reloading with OpenVINO...")
-                            self.model = YOLO(str(ov_path), task='detect')
-                        else:
-                            print("⚠️ Export completed but model not found, using PyTorch")
+                        import filelock
+                        
+                        lock_path = pt_path.with_suffix('.pt.lock')
+                        print("⚡ OpenVINO detected! Checking export lock...")
+                        
+                        # Use cross-process lock so dual instances don't collide
+                        with filelock.FileLock(str(lock_path), timeout=120):
+                            # Check again inside lock in case the other process finished exporting
+                            if ov_path.exists() and (ov_path / "metadata.yaml").exists():
+                                print("✅ Another process already exported! Reloading with OpenVINO...")
+                                self.model = YOLO(str(ov_path), task='detect')
+                            else:
+                                print("⚡ Exporting model for Intel CPU (one-time)...")
+                                self.model.export(format='openvino')
+                                if ov_path.exists():
+                                    print("✅ Export success! Reloading with OpenVINO...")
+                                    self.model = YOLO(str(ov_path), task='detect')
+                                else:
+                                    print("⚠️ Export completed but model not found, using PyTorch")
                     except ImportError:
-                        print("ℹ️ OpenVINO not installed — using PyTorch (pip install openvino to speed up)")
+                        print("ℹ️ OpenVINO/filelock not installed — using PyTorch (pip install openvino filelock to speed up)")
+                    except filelock.Timeout:
+                        print("⚠️ Timeout waiting for OpenVINO export from another process — using PyTorch")
                     except Exception as e:
                         print(f"⚠️ OpenVINO export failed: {e} — using PyTorch")
             else:

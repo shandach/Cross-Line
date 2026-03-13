@@ -7,3 +7,4 @@ openvino>=2023.0.0
 openvino-dev>=2023.0.0
 psycopg2-binary>=2.9.0
 pytz>=2023.3
+filelock>=3.13.0

@@ -64,7 +64,7 @@ WORK_END = os.getenv("WORK_END", "23:59")
 # ═══════════════════════════════════════════════════
 # AI Settings
 # ═══════════════════════════════════════════════════
-YOLO_MODEL = os.getenv("YOLO_MODEL", "yolov8n.pt")  # Nano model is best for CPU
+YOLO_MODEL = os.getenv("YOLO_MODEL", "yolov8s.pt")  # Switched to Small model for better accuracy
 DETECTION_CONFIDENCE = float(os.getenv("DETECTION_CONFIDENCE", "0.5"))
 
 # Filter out non-human shapes
