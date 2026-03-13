@@ -56,7 +56,10 @@ class Database:
         Записать вход клиента (локальная БД).
         """
         if crossed_at is None:
-            crossed_at = now_tashkent()
+            from config import naive_now_tashkent
+            crossed_at = naive_now_tashkent()
+        elif crossed_at.tzinfo is not None:
+            crossed_at = crossed_at.replace(tzinfo=None)
         
         with self.get_session() as session:
             log = EntranceLog(

@@ -84,7 +84,11 @@ class CloudDatabase:
             return
         
         if crossed_at is None:
-            crossed_at = now_tashkent()
+            from config import naive_now_tashkent
+            crossed_at = naive_now_tashkent()
+        elif crossed_at.tzinfo is not None:
+            # If explicit aware datetime passed, strip it to naive Tashkent time
+            crossed_at = crossed_at.replace(tzinfo=None)
         
         def _push():
             try:
