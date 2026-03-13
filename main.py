@@ -237,6 +237,7 @@ class ClientCounter:
                 )
                 self.line_config = load_line_config()
                 self._create_engine()
+                self._reload_count_from_db()
                 print(f"🔄 Direction changed to: {new_dir}")
         
         elif key == ord('f') or key == ord('F'):
