@@ -43,56 +43,14 @@ class TrackingDetector:
                 if fallback.exists():
                     model_path = str(fallback)
 
-        # === MODEL LOADING (with OpenVINO auto-optimization for Intel CPUs) ===
+        # === MODEL LOADING ===
         try:
-            pt_path = Path(model_path)
-            if pt_path.suffix == '.pt':
-                ov_path = pt_path.parent / f"{pt_path.stem}_openvino_model"
-                
-                if ov_path.exists() and (ov_path / "metadata.yaml").exists():
-                    # Already exported — load fast OpenVINO model
-                    print(f"🚀 Loading OpenVINO model (Intel optimized): {ov_path}")
-                    self.model = YOLO(str(ov_path), task='detect')
-                else:
-                    # Load PyTorch first
-                    print(f"Loading PyTorch model: {model_path}")
-                    self.model = YOLO(model_path, task='detect')
-                    
-                    # Try auto-export to OpenVINO (only if openvino is installed)
-                    try:
-                        import openvino  # noqa: F401
-                        import filelock
-                        
-                        lock_path = pt_path.with_suffix('.pt.lock')
-                        print("⚡ OpenVINO detected! Checking export lock...")
-                        
-                        # Use cross-process lock so dual instances don't collide
-                        with filelock.FileLock(str(lock_path), timeout=120):
-                            # Check again inside lock in case the other process finished exporting
-                            if ov_path.exists() and (ov_path / "metadata.yaml").exists():
-                                print("✅ Another process already exported! Reloading with OpenVINO...")
-                                self.model = YOLO(str(ov_path), task='detect')
-                            else:
-                                print("⚡ Exporting model for Intel CPU (one-time)...")
-                                self.model.export(format='openvino')
-                                if ov_path.exists():
-                                    print("✅ Export success! Reloading with OpenVINO...")
-                                    self.model = YOLO(str(ov_path), task='detect')
-                                else:
-                                    print("⚠️ Export completed but model not found, using PyTorch")
-                    except ImportError:
-                        print("ℹ️ OpenVINO/filelock not installed — using PyTorch (pip install openvino filelock to speed up)")
-                    except filelock.Timeout:
-                        print("⚠️ Timeout waiting for OpenVINO export from another process — using PyTorch")
-                    except Exception as e:
-                        print(f"⚠️ OpenVINO export failed: {e} — using PyTorch")
-            else:
-                self.model = YOLO(model_path, task='detect')
-
+            print(f"Loading PyTorch model: {model_path}")
+            self.model = YOLO(model_path, task='detect')
         except Exception as e:
             print(f"⚠️ Error loading model: {e}")
-            print(f"Fallback to standard load: {model_path}")
-            self.model = YOLO(model_path, task='detect')
+            print("Fallback to standard YOLO load")
+            self.model = YOLO(YOLO_MODEL, task='detect')
         # === MODEL LOADING END ===
         
         self.confidence = DETECTION_CONFIDENCE

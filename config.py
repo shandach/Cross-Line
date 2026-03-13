@@ -64,8 +64,8 @@ WORK_END = os.getenv("WORK_END", "23:59")
 # ═══════════════════════════════════════════════════
 # AI Settings
 # ═══════════════════════════════════════════════════
-YOLO_MODEL = os.getenv("YOLO_MODEL", "yolov8s.pt")  # Switched to Small model for better accuracy
-DETECTION_CONFIDENCE = float(os.getenv("DETECTION_CONFIDENCE", "0.5"))
+YOLO_MODEL = os.getenv("YOLO_MODEL", "yolov8s.pt")  # Core model is now yolov8s.pt
+DETECTION_CONFIDENCE = float(os.getenv("DETECTION_CONFIDENCE", "0.35"))
 
 # Filter out non-human shapes
 PERSON_MIN_ASPECT_RATIO = 0.0  # Disabled (0.0) — allows any shape for top-down/side camera angles
