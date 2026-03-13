@@ -40,7 +40,7 @@ class LineCrossingEngine:
     - MIN_TRACK_AGE: ignores very new tracks (noise)
     """
     
-    MIN_TRACK_AGE = 2            # Minimum frames before checking
+    MIN_TRACK_AGE = 1            # Minimum frames before checking
     COOLDOWN_SEC = 1.5           # Seconds between counts (anti-jitter)
 
     def __init__(self, line_start: Tuple[int, int], line_end: Tuple[int, int], 
@@ -126,8 +126,10 @@ class LineCrossingEngine:
         # 3. Dot product between person's movement (dx, dy) and the correct normal (nx, ny)
         dot_product = (dx * nx) + (dy * ny)
         
-        # If dot product is positive, they are moving in the same general direction as the normal
-        return dot_product > 0
+        # We allow a slightly negative dot product (-50) because crouched people
+        # or noisy bounding boxes can create a skewed movement history. 
+        # As long as they crossed the line physically, we shouldn't be too strict here.
+        return dot_product > -50
 
     def update(self, detections: list, current_time: float = None) -> List[int]:
         """
