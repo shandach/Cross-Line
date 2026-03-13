@@ -165,9 +165,13 @@ def draw_shift_status(frame: np.ndarray, work_start: str, work_end: str,
     """Показать статус рабочей смены"""
     h, w = frame.shape[:2]
     
-    now_str = datetime.now().strftime("%H:%M:%S")
+    now = datetime.now()
+    now_str = now.strftime("%H:%M:%S")
     
-    if is_active:
+    if now.weekday() >= 5:
+        status = f"DAM OLISH KUNI | {now_str}"
+        color = (0, 165, 255)  # Orange
+    elif is_active:
         status = f"SMENA FAOL | {now_str}"
         color = (0, 255, 0)
     else:

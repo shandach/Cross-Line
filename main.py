@@ -93,9 +93,13 @@ class ClientCounter:
             )
     
     def _is_shift_time(self) -> bool:
-        """Проверить: сейчас рабочая смена? (по Ташкенту)"""
+        """Проверить: сейчас рабочая смена? (по Ташкенту, ПН-ПТ)"""
         now = now_tashkent()
         
+        # Выходные (5 = Суббота, 6 = Воскресенье)
+        if now.weekday() >= 5:
+            return False
+            
         start_h, start_m = map(int, WORK_START.split(":"))
         end_h, end_m = map(int, WORK_END.split(":"))
         
