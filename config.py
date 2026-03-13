@@ -24,8 +24,12 @@ TZ_TASHKENT = pytz.timezone("Asia/Tashkent")
 
 
 def now_tashkent() -> datetime:
-    """Текущее время по Ташкенту"""
+    """Текущее время по Ташкенту (с таймзоной)"""
     return datetime.now(TZ_TASHKENT)
+
+def naive_now_tashkent() -> datetime:
+    """Тот же Ташкент, но без таймзоны (чтобы БД не конвертировала обратно в UTC)"""
+    return now_tashkent().replace(tzinfo=None)
 
 
 def today_tashkent():

@@ -8,6 +8,7 @@ Database models for Client Counter
 from datetime import datetime, date
 from sqlalchemy import Column, Integer, String, DateTime, Date, Float, Text
 from sqlalchemy.orm import declarative_base
+from config import naive_now_tashkent
 
 # === Local SQLite models ===
 LocalBase = declarative_base()
@@ -22,7 +23,7 @@ class EntranceLog(LocalBase):
     crossed_at = Column(DateTime, nullable=False)
     log_date = Column(Date, nullable=False)
     camera_name = Column(String(200), default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=naive_now_tashkent)
     
     def __repr__(self):
         return f"<EntranceLog(id={self.id}, track_id={self.track_id}, crossed_at={self.crossed_at})>"
@@ -80,9 +81,9 @@ class ClientCrossing(CloudBase):
     branch_name = Column(String(200), default="")         # Название филиала
     camera_name = Column(String(200), default="")         # Имя камеры
     track_id = Column(Integer, nullable=False)             # ByteTrack ID
-    crossed_at = Column(DateTime, nullable=False)          # Время по Ташкенту
+    crossed_at = Column(DateTime, nullable=False)          # Время по Ташкенту (без tzinfo)
     log_date = Column(Date, nullable=False)                # Дата (для группировки)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=naive_now_tashkent)
     
     def __repr__(self):
         return f"<ClientCrossing(branch={self.branch_id}, track={self.track_id}, at={self.crossed_at})>"
